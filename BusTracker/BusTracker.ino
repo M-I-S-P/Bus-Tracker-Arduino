@@ -20,13 +20,12 @@
 int gpsPowerPin = 2;
 
 bool changeRoute = false;
-String newRoute = "";
+String newRouteId = "";
 
 // ------------------------------------------------------------------
 
 TinyGPSPlus gps;
 
-String routeNames[2] = {"Route 1"};
 String routeIds[2] = {"qFJLN3NN2ebgEvjoDI1Y", "hF7nxVqJy7v8ADmBiIV0"};
 StaticJsonDocument<100> allRoutes;
 
@@ -74,12 +73,12 @@ void loop() {
 
   if(changeRoute){
 //    Serial.println("CHANGED ROUTE IF");
-    String routeIdNew = allRoutes[newRoute];
-//    String body = "{\"route\": \"" + routeIdNew + "\"}";
-    String body = "{ \"route\": \"hF7nxVqJy7v8ADmBiIV0\"}";
+//    String routeIdNew = allRoutes[newRoute];
+    String body = "{\"route\": \"" + newRouteId + "\"}";
+//    String body = "{ \"route\": \"hF7nxVqJy7v8ADmBiIV0\"}";
     connectHTTP(body, "route");
     changeRoute = false;
-    newRoute = "";
+    newRouteId = "";
   }
 }
 
@@ -303,7 +302,7 @@ void receiveEvent(int howMany){
 //  int x = Wire.read();    // receive byte as an integer
   Serial.println(received);         // print the integer
   changeRoute = true;
-  newRoute = received;
+  newRouteId = received;
  
 //  Serial.println("Just finished uploading the code, my lord.");
 }

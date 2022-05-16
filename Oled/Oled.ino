@@ -22,6 +22,10 @@
 
 U8G2_SH1106_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
+const int routeNameSize = 2;
+String routeIds[routeNameSize] = {"qFJLN3NN2ebgEvjoDI1Y", "hF7nxVqJy7v8ADmBiIV0"};
+StaticJsonDocument<200> routeIdKeyValue;
+
 //SoftwareSerial master(RX, TX);
 
 bool showSplashScreen = true;
@@ -195,6 +199,9 @@ void setup() {
     /* menu_down_pin= */ U8X8_PIN_NONE, /* menu_home_pin= */ 3);
 
 
+  for(int i = 0; i<routeNameSize; i++){
+    routeIdKeyValue["Route " + String(i+1)] = routeIds[i];
+  }
   
  
 }
@@ -228,7 +235,7 @@ void loop() {
 void createAndSendToSlaveJSON(String route){
   // Create the JSON document
   StaticJsonDocument<200> doc;
-  doc["busRoute"] = route;
+  doc["busRoute"] = routeIdKeyValue[route];
   
   char sendJSONData[500];
   serializeJson(doc, sendJSONData);
