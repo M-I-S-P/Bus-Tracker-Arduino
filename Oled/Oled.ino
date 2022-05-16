@@ -22,10 +22,6 @@
 
 U8G2_SH1106_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
-const int routeNameSize = 2;
-String routeIds[routeNameSize] = {"qFJLN3NN2ebgEvjoDI1Y", "hF7nxVqJy7v8ADmBiIV0"};
-StaticJsonDocument<200> routeIdKeyValue;
-
 //SoftwareSerial master(RX, TX);
 
 bool showSplashScreen = true;
@@ -106,6 +102,8 @@ static const unsigned char u8g2_logo_97x51_bits[] U8X8_PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
+
+
 char availableRoutes[] =
   "< Back\n"
   "Route 1\n"
@@ -166,7 +164,7 @@ void drawSelectionScreen() {
 }
 
 void drawCurrentRouteInfoScreen(String currRoute) {
-  String routeString = "ROUTE " + currRoute;
+  String routeString = currRoute;
   byte buffer[routeString.length() + 1];
   routeString.toCharArray(buffer, routeString.length() + 1);
 
@@ -197,12 +195,6 @@ void setup() {
   u8g2.begin(/* menu_select_pin= */ 5, /* menu_next_pin= */ 4,
     /* menu_prev_pin= */ 2, /* menu_up_pin= */ U8X8_PIN_NONE,
     /* menu_down_pin= */ U8X8_PIN_NONE, /* menu_home_pin= */ 3);
-
-
-  for(int i = 0; i<routeNameSize; i++){
-    routeIdKeyValue["Route " + String(i+1)] = routeIds[i];
-  }
-  
  
 }
 
@@ -234,11 +226,15 @@ void loop() {
 
 void createAndSendToSlaveJSON(String route){
   // Create the JSON document
-  StaticJsonDocument<200> doc;
-  doc["busRoute"] = routeIdKeyValue[route];
+//  StaticJsonDocument<200> doc;
+//  doc["busRoute"] = route;
   
-  char sendJSONData[500];
-  serializeJson(doc, sendJSONData);
+  char sendJSONData[100];
+//  serializeJson(doc, sendJSONData);
+
+//  Serial.println(sendJSONData);
+  route.toCharArray(sendJSONData, 100);
+
   
   Wire.beginTransmission(4);
   Wire.write(sendJSONData);

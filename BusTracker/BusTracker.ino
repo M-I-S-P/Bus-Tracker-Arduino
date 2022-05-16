@@ -21,13 +21,14 @@ int gpsPowerPin = 2;
 
 bool changeRoute = false;
 String newRouteId = "";
+String newRoute = "";
 
 // ------------------------------------------------------------------
 
 TinyGPSPlus gps;
 
-String routeIds[2] = {"qFJLN3NN2ebgEvjoDI1Y", "hF7nxVqJy7v8ADmBiIV0"};
-StaticJsonDocument<100> allRoutes;
+//String routeIds[2] = {"qFJLN3NN2ebgEvjoDI1Y", "hF7nxVqJy7v8ADmBiIV0"};
+//StaticJsonDocument<100> allRoutes;
 
 
 // Object of JSONBuffer used in sending
@@ -50,9 +51,9 @@ void setup() {
   Wire.begin(4);                // join i2c bus with address #4
   Wire.onReceive(receiveEvent); // register event
 
-  for(int i = 0; i<2; i++){
-    allRoutes["Route " + String(i+1)] = routeIds[i];
-  }
+//  for(int i = 0; i<2; i++){
+//    allRoutes["Route " + String(i+1)] = routeIds[i];
+//  }
 
   // Power for GPS
   pinMode(gpsPowerPin, OUTPUT);
@@ -72,6 +73,19 @@ void loop() {
   setGPSInfo();
 
   if(changeRoute){
+    String routeNames[2] = {"Route 1", "Route 2"};
+    String routeIds[2] = {"qFJLN3NN2ebgEvjoDI1Y", "hF7nxVqJy7v8ADmBiIV0"};
+    Serial.print("inside change route and new route is: ");
+    Serial.println(newRoute);
+    int i = 0;
+    for(i; i<2; i++){
+      if(newRoute == routeNames[i]){
+        break;
+      }
+    }
+    newRouteId = routeIds[i];
+  Serial.print("new routeID is: ");
+  Serial.println(newRouteId);
 //    Serial.println("CHANGED ROUTE IF");
 //    String routeIdNew = allRoutes[newRoute];
     String body = "{\"route\": \"" + newRouteId + "\"}";
@@ -300,11 +314,14 @@ void receiveEvent(int howMany){
 //    Serial.print(c);         // print the character
   }
 //  int x = Wire.read();    // receive byte as an integer
-  Serial.println(received);         // print the integer
+  Serial2.println(received);         // print the integer
   changeRoute = true;
-  newRouteId = received;
- 
-//  Serial.println("Just finished uploading the code, my lord.");
+  
+  newRoute = received;
+  Serial.println(newRoute);
+
+  
+  Serial.println("Just finished uploading the code, my lord.");
 }
 
 // For debugging of AT commands
