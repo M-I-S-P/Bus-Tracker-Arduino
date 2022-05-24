@@ -1,6 +1,0 @@
-{
-    "port": "COM6",
-    "board": "arduino:avr:mega",
-    "sketch": "BusTracker.ino",
-    "configuration": "cpu=atmega2560"
-}
