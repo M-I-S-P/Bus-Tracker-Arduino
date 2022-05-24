@@ -4,33 +4,18 @@
 
 #include <Arduino.h>
 #include <U8g2lib.h>
-#include <SoftwareSerial.h>
 #include "ArduinoJson.h"
-
-#ifdef U8X8_HAVE_HW_SPI
-#include <SPI.h>
-#endif
-#ifdef U8X8_HAVE_HW_I2C
 #include <Wire.h>
-#endif
 
-#define RX 50
-#define TX 26
-
-// Define unique bus tracker ID
-#define UNIQUE_TRACKER_ID "busTrackerBT-1"
 
 U8G2_SH1106_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
-//SoftwareSerial master(RX, TX);
 
 bool showSplashScreen = true;
 bool openSelectionScreen = false;
 bool showCurrentRouteInfoScreen = false;
 
-//TODO: Get from mega
 String currOperRoute = "Route 1";
-//char *availableRoutes = ""; // routes separated by \n
 
 // Define initial splash-screen bitmap
 #define u8g2_logo_97x51_width 96
@@ -128,7 +113,6 @@ void drawSelectionScreen() {
   int firstIndex = selection_str.indexOf('\n');
   String selection_split = selection_str.substring(0, firstIndex);
 
-  Serial.println(selection_split);
   if (selection_split == "< Back") {
     openSelectionScreen = false;
     showCurrentRouteInfoScreen = true;
@@ -143,7 +127,6 @@ void drawSelectionScreen() {
 
   if (selectRoute == 1) {
     if(selection_split != currOperRoute){
-      Serial.println("not equal if");
       currOperRoute = selection_split;
   
       // Send new route to slave to post to firebase
@@ -155,7 +138,7 @@ void drawSelectionScreen() {
     return;
 
   }
-  else if (selectRoute == 2 && currOperRoute != "") {
+  else if (selectRoute == 2) {
     current_selection = 1;
     openSelectionScreen = true;
     showCurrentRouteInfoScreen = false;
@@ -165,7 +148,7 @@ void drawSelectionScreen() {
 
 void drawCurrentRouteInfoScreen(String currRoute) {
   String routeString = currRoute;
-  byte buffer[routeString.length() + 1];
+  char buffer[routeString.length() + 1];
   routeString.toCharArray(buffer, routeString.length() + 1);
 
   uint8_t btnSelected =  u8g2.userInterfaceMessage(
@@ -200,7 +183,6 @@ void setup() {
 
 
 void loop() {
-  unsigned int start = millis();
   u8g2.firstPage();
   do {
     if (showSplashScreen == true) {
@@ -225,14 +207,9 @@ void loop() {
 }
 
 void createAndSendToSlaveJSON(String route){
-  // Create the JSON document
-//  StaticJsonDocument<200> doc;
-//  doc["busRoute"] = route;
   
   char sendJSONData[100];
-//  serializeJson(doc, sendJSONData);
 
-//  Serial.println(sendJSONData);
   route.toCharArray(sendJSONData, 100);
 
   
